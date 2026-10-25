@@ -39,6 +39,8 @@ public class ZombieGirl extends AbstractMonsterGirl {
     private static final int WAVE_MAX_SIZE = 5;
     private static final int WAVE_MIN_INTERVAL = 5 * 20;
     private static final int WAVE_MAX_INTERVAL = 10 * 20;
+    /** Reinforcements appear at most this many blocks above or below her. */
+    private static final int REINFORCEMENT_VERTICAL_RANGE = 8;
     /** Waves wait while no player is this close, so an idle zombie girl cannot fill the world with zombies. */
     private static final double PLAYER_RANGE = 32.0;
 
@@ -52,7 +54,7 @@ public class ZombieGirl extends AbstractMonsterGirl {
     public static AttributeSupplier.Builder createAttributes() {
         return createBaseAttributes()
                 .add(Attributes.ATTACK_DAMAGE, 10.0)
-                .add(Attributes.MOVEMENT_SPEED, 0.23 * 1.25) // vanilla zombie speed + 25%
+                .add(Attributes.MOVEMENT_SPEED, 0.3)
                 .add(Attributes.ARMOR, 4.0);
     }
 
@@ -92,8 +94,9 @@ public class ZombieGirl extends AbstractMonsterGirl {
 
     /**
      * Spawns one zombie the way vanilla zombie reinforcements do (Zombie#hurt on Hard): up to 50 tries at a
-     * random spot 7-40 blocks away on each axis, on a valid spawn block, not within 7 blocks of a player, not
-     * in liquid or blocks. Unlike vanilla, darkness is not required, so the skill also works in daylight.
+     * random spot 7-40 blocks away horizontally, on a valid spawn block, not within 7 blocks of a player, not
+     * in liquid or blocks. Unlike vanilla, the spot stays within 8 blocks of her height and darkness is not
+     * required, so the skill also works in daylight.
      */
     private void callReinforcement() {
         if (!(level() instanceof ServerLevel serverLevel)) {
@@ -109,7 +112,7 @@ public class ZombieGirl extends AbstractMonsterGirl {
         int z = Mth.floor(getZ());
         for (int attempt = 0; attempt < 50; attempt++) {
             int sx = x + Mth.nextInt(random, 7, 40) * Mth.nextInt(random, -1, 1);
-            int sy = y + Mth.nextInt(random, 7, 40) * Mth.nextInt(random, -1, 1);
+            int sy = y + Mth.nextInt(random, -REINFORCEMENT_VERTICAL_RANGE, REINFORCEMENT_VERTICAL_RANGE);
             int sz = z + Mth.nextInt(random, 7, 40) * Mth.nextInt(random, -1, 1);
             BlockPos pos = new BlockPos(sx, sy, sz);
             if (!SpawnPlacements.isSpawnPositionOk(EntityType.ZOMBIE, serverLevel, pos)

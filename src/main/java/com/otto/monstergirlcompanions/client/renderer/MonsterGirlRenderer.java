@@ -12,15 +12,19 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Mob;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Renderer shared by hostile and friendly monster girls. The texture is the one embedded in the
  * Blockbench model, uploaded the first time the entity is drawn.
  */
 public class MonsterGirlRenderer<T extends Mob, M extends HumanoidModel<T>> extends HumanoidMobRenderer<T, M> {
+    /** Textures already uploaded; the hostile and friendly versions of a species share one. */
+    private static final Set<ResourceLocation> UPLOADED = new HashSet<>();
+
     private final BbModel bbModel;
     private final ResourceLocation texture;
-    private boolean textureUploaded;
 
     public MonsterGirlRenderer(EntityRendererProvider.Context context, M model, BbModel bbModel) {
         super(context, model, 0.5F);
@@ -30,8 +34,7 @@ public class MonsterGirlRenderer<T extends Mob, M extends HumanoidModel<T>> exte
 
     @Override
     public ResourceLocation getTextureLocation(T entity) {
-        if (!textureUploaded) {
-            textureUploaded = true;
+        if (UPLOADED.add(texture)) {
             uploadTexture();
         }
         return texture;

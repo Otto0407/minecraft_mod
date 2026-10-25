@@ -1,9 +1,11 @@
 package com.otto.monstergirlcompanions;
 
 import com.mojang.logging.LogUtils;
+import com.otto.monstergirlcompanions.registry.ModBlocks;
 import com.otto.monstergirlcompanions.registry.ModCreativeTabs;
 import com.otto.monstergirlcompanions.registry.ModEntities;
 import com.otto.monstergirlcompanions.registry.ModItems;
+import com.otto.monstergirlcompanions.registry.ModLootModifiers;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
@@ -18,9 +20,11 @@ public class MonsterGirlCompanions {
     public MonsterGirlCompanions(FMLJavaModLoadingContext context) {
         IEventBus modBus = context.getModEventBus();
 
+        ModBlocks.BLOCKS.register(modBus);
         ModEntities.ENTITY_TYPES.register(modBus);
         ModItems.ITEMS.register(modBus);
         ModCreativeTabs.TABS.register(modBus);
+        ModLootModifiers.LOOT_MODIFIERS.register(modBus);
     }
 
     public static ResourceLocation id(String path) {

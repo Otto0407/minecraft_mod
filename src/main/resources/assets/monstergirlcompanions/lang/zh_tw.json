@@ -1,5 +1,9 @@
 {
   "itemGroup.monstergirlcompanions": "魔物娘夥伴",
+  "block.monstergirlcompanions.trial_core": "試煉核心",
   "entity.monstergirlcompanions.zombie_girl": "殭屍娘",
+  "entity.monstergirlcompanions.zombie_girl_companion": "殭屍娘",
+  "item.monstergirlcompanions.infection_key": "感染之鑰",
+  "item.monstergirlcompanions.infection_bell": "感染之鈴",
   "item.monstergirlcompanions.zombie_girl_spawn_egg": "殭屍娘生怪蛋"
 }
