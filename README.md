@@ -33,22 +33,32 @@ Windows 請用 `gradlew.bat`。
 
 ## 模型與材質（Blockbench）
 
-魔物娘的身體使用 LittleMaid（女僕模組）預設的「Orign」模型，從 LittleMaidModelLoader 提取而來。
+`blockbench/littlemaid_models/` 是從 LittleMaidModelLoader（LMML 1.18.2-4.6.7）原樣提取的 12 種女僕模型，
+可直接用 [Blockbench](https://www.blockbench.net/) 開啟：
 
-- `blockbench/littlemaid.bbmodel`：原版女僕模型 + 原版材質，用來參考。
-- `blockbench/zombie_girl.bbmodel`：殭屍娘（目前是女僕材質把膚色換成綠色）。
-- `blockbench/littlemaid_textures/`：女僕模組內建的 16 色女僕材質（64×32），可以當作畫材質的底稿。
+| 檔案 | 身高 | 材質尺寸 | 特色 | 內嵌材質 |
+|---|---|---|---|---|
+| `Orign.bbmodel` | 1.35 格 | 64×32 | 經典小女僕（預設） | `default/mob_littlemaid_0c` |
+| `Archetype.bbmodel` | 1.35 格 | 64×32 | 小女僕原型 | UV 色塊模板 |
+| `Aug.bbmodel` | 1.35 格 | 64×32 | 雙馬尾＋呆毛 | `mmm_aug/aug_0c` |
+| `SR2.bbmodel` | 1.35 格 | 64×32 | 小女僕變體 | `mmm_sr2/engageoctaver_0c` |
+| `RX0.bbmodel` | 1.35 格 | 128×64 | 細節較多的小女僕 | UV 色塊模板 |
+| `Elsa5.bbmodel` | 1.75 格 | 64×64 | 高挑女僕 | `e15color_elsa5/contract_c` |
+| `Chloe2.bbmodel` | 1.80 格 | 128×64 | 高挑、有胸部 | `b16color_chloe2/contract_c` |
+| `Beverly7.bbmodel` | 1.99 格 | 128×64 | 約兩格高、豐滿 | `b16color_beverly7/contract_c` |
+| `Classic64.bbmodel` | 1.80 格 | 64×64 | 玩家（Steve）體型 | UV 色塊模板 |
+| `Slim64.bbmodel` | 1.80 格 | 64×64 | 玩家（Alex）細手體型 | UV 色塊模板 |
+| `Stef.bbmodel` | 1.80 格 | 64×32 | 女性玩家體型（有 bust） | `stef_stef/stef_00` |
+| `Steve.bbmodel` | 1.80 格 | 64×32 | 舊版玩家體型 | `steve_steve/steve_00` |
 
-用 [Blockbench](https://www.blockbench.net/) 開啟 `.bbmodel` 修改：
+- 姿勢是模型在遊戲中靜止站立時的樣子（例如 Chloe2、Beverly7 原本就是重心在單腳的站姿）。
+- `ModelPlate`（薄片零件，例如 Aug 的頭髮）轉成厚度 0 的方塊，用單面 UV。
+- `blockbench/littlemaid_textures/` 有 LMML 內建的全部材質包，資料夾名稱是「材質包_模型」，
+  例如 `b16color_beverly7` 是 Beverly7 用的材質；`contract_*` 是契約後、`wild_*` 是野生時的顏色。
+- 提取工具在 `tools/lmml_extract/`。
 
-- **只改材質**：`File > Export > Export Texture`，覆蓋
-  `src/main/resources/assets/monstergirlcompanions/textures/entity/monster_girl/zombie_girl.png`。
-- **改了模型形狀**：`File > Export > Export Java Entity`（Mojmaps），把產生的 `.java` 交給 Claude 接上。
-  請保留 `head`、`hat`、`body`、`right_arm`、`left_arm`、`right_leg`、`left_leg` 這幾個群組名稱，
-  遊戲的動作（走路、揮手）是靠這些名稱找到部位的。
-
-`.bbmodel` 與殭屍娘測試材質由 `python3 tools/gen_maid_assets.py` 產生（需要 Pillow）；
-在 Blockbench 修改過後請不要再跑這個腳本，否則會被覆蓋。
+選好模型、在 Blockbench 修改後，`File > Export > Export Java Entity`（Mojmaps），
+把產生的 `.java` 和材質交給 Claude 接進遊戲。
 
 ## 授權
 
