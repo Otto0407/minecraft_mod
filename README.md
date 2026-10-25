@@ -1,4 +1,4 @@
-# Trial Companions（試煉夥伴）
+# Monster Girl Companions（魔物娘夥伴）
 
 Minecraft **1.21.1** / **Forge 52.x** 模組（Fabric 兼容視情況再決定）。
 
@@ -25,7 +25,7 @@ Minecraft **1.21.1** / **Forge 52.x** 模組（Fabric 兼容視情況再決定�
 需要 JDK 21。
 
 ```bash
-./gradlew build        # 產生 build/libs/trialcompanions-<版本>.jar
+./gradlew build        # 產生 build/libs/monstergirlcompanions-<版本>.jar
 ./gradlew runClient    # 啟動開發用客戶端
 ```
 
@@ -33,11 +33,24 @@ Windows 請用 `gradlew.bat`。
 
 ## 模型與材質（Blockbench）
 
-`blockbench/zombie_girl.bbmodel` 是和程式中 `MonsterGirlModel` 對應的初始模型（含測試材質），
-可以直接用 [Blockbench](https://www.blockbench.net/) 開啟修改。
+魔物娘的身體使用 LittleMaid（女僕模組）預設的「Orign」模型，從 LittleMaidModelLoader 提取而來。
 
-- 只改材質：在 Blockbench 畫好後匯出 PNG，覆蓋
-  `src/main/resources/assets/trialcompanions/textures/entity/monster_girl/zombie_girl.png`。
-- 改了模型形狀：`File > Export > Export Java Entity`（Mojmaps 版本），把產生的 Java 檔交給 Claude 接上。
+- `blockbench/littlemaid.bbmodel`：原版女僕模型 + 原版材質，用來參考。
+- `blockbench/zombie_girl.bbmodel`：殭屍娘（目前是女僕材質把膚色換成綠色）。
+- `blockbench/littlemaid_textures/`：女僕模組內建的 16 色女僕材質（64×32），可以當作畫材質的底稿。
 
-測試材質與 `.bbmodel` 由 `python3 tools/gen_placeholder_assets.py` 產生（需要 Pillow）。
+用 [Blockbench](https://www.blockbench.net/) 開啟 `.bbmodel` 修改：
+
+- **只改材質**：`File > Export > Export Texture`，覆蓋
+  `src/main/resources/assets/monstergirlcompanions/textures/entity/monster_girl/zombie_girl.png`。
+- **改了模型形狀**：`File > Export > Export Java Entity`（Mojmaps），把產生的 `.java` 交給 Claude 接上。
+  請保留 `head`、`hat`、`body`、`right_arm`、`left_arm`、`right_leg`、`left_leg` 這幾個群組名稱，
+  遊戲的動作（走路、揮手）是靠這些名稱找到部位的。
+
+`.bbmodel` 與殭屍娘測試材質由 `python3 tools/gen_maid_assets.py` 產生（需要 Pillow）；
+在 Blockbench 修改過後請不要再跑這個腳本，否則會被覆蓋。
+
+## 授權
+
+本模組使用了 LittleMaid 系列（MMM、EMB4、Verclene、firis-games、Sistr）的模型與材質，
+依照 [LittleMaid Licence](blockbench/littlemaid_textures/LICENCE.md)，**本模組只能用於非營利目的**。
