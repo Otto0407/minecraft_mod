@@ -14,7 +14,7 @@ Minecraft **1.21.1** / **Forge 52.x** 模組（Fabric 兼容視情況再決定�
 - [x] 專案骨架（Forge MDK、註冊表、創造模式分頁）
 - [ ] 第 1 部分：敵對試煉實體（魔物娘）
   - [x] 共用框架（60 血小 boss、共用人形模型與渲染器）
-  - [x] 殭屍娘：基本近戰 AI、生怪蛋、測試用材質（特殊技能待設計）
+  - [x] 殭屍娘：自製模型、攻擊力 10、速度為殭屍的 1.25 倍、殭屍增援技能
 - [ ] 第 2 部分：試煉鑰匙與召喚券物品
 - [ ] 第 3 部分：試煉結構與試煉流程
 - [ ] 第 4 部分：友好夥伴與指令系統
@@ -31,10 +31,29 @@ Minecraft **1.21.1** / **Forge 52.x** 模組（Fabric 兼容視情況再決定�
 
 Windows 請用 `gradlew.bat`。
 
-## 模型與材質（Blockbench）
+## 魔物娘模型（Blockbench）
+
+遊戲直接讀取 `src/main/resources/assets/monstergirlcompanions/bbmodel/<名稱>.bbmodel`（模型＋內嵌材質），
+所以在 Blockbench 修改後**只要覆蓋這個檔案再重新建置**，程式碼不用改，碰撞箱高度也會自動跟著模型高度。
+
+需要遵守的規則：
+
+- 群組名稱 `head`、`body`、`right_arm`、`left_arm`、`right_leg`、`left_leg` 要保留，遊戲的走路、轉頭、揮手動作靠它們找部位。
+  群組可以放在其他群組裡（例如 `limbs > arms > right_arm`）。
+- 每個上述群組的**軸心（Pivot）要放在關節**：頭在脖子、手在肩膀、腳在髖部，否則動作會繞著錯的位置轉。
+- `right_item`、`left_item` 是手持物品的掛載點（空群組，放在手掌位置，物品會從這點長出來）。
+- 材質要存在 `.bbmodel` 裡（Blockbench 預設就會內嵌），只用第一張材質，並使用 Box UV。
+- 隱藏（眼睛關掉）的方塊不會出現在遊戲裡，例如目前殭屍娘的 `skirt`。
+- 碰撞箱高度＝最高方塊的頂端；眼睛高度＝`head` 群組的中間。
+
+| 魔物娘 | 檔案 |
+|---|---|
+| 殭屍娘 | `bbmodel/zombie_girl.bbmodel` |
+
+## LittleMaid 參考模型
 
 `blockbench/littlemaid_models/` 是從 LittleMaidModelLoader（LMML 1.18.2-4.6.7）原樣提取的 12 種女僕模型，
-可直接用 [Blockbench](https://www.blockbench.net/) 開啟：
+可以當作製作新魔物娘的底稿：
 
 | 檔案 | 身高 | 材質尺寸 | 特色 | 內嵌材質 |
 |---|---|---|---|---|
@@ -56,9 +75,6 @@ Windows 請用 `gradlew.bat`。
 - `blockbench/littlemaid_textures/` 有 LMML 內建的全部材質包，資料夾名稱是「材質包_模型」，
   例如 `b16color_beverly7` 是 Beverly7 用的材質；`contract_*` 是契約後、`wild_*` 是野生時的顏色。
 - 提取工具在 `tools/lmml_extract/`。
-
-選好模型、在 Blockbench 修改後，`File > Export > Export Java Entity`（Mojmaps），
-把產生的 `.java` 和材質交給 Claude 接進遊戲。
 
 ## 授權
 

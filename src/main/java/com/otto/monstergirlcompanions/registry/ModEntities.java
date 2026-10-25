@@ -2,6 +2,7 @@ package com.otto.monstergirlcompanions.registry;
 
 import com.otto.monstergirlcompanions.MonsterGirlCompanions;
 import com.otto.monstergirlcompanions.entity.monstergirl.ZombieGirl;
+import com.otto.monstergirlcompanions.model.ModBbModels;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
@@ -18,8 +19,9 @@ public final class ModEntities {
 
     public static final RegistryObject<EntityType<ZombieGirl>> ZOMBIE_GIRL = ENTITY_TYPES.register("zombie_girl", () ->
             EntityType.Builder.of(ZombieGirl::new, MobCategory.MONSTER)
-                    .sized(0.6F, 1.5F)
-                    .eyeHeight(1.3F)
+                    // Hitbox follows the Blockbench model, so a taller or shorter model needs no code change.
+                    .sized(0.6F, ModBbModels.ZOMBIE_GIRL.height())
+                    .eyeHeight(ModBbModels.ZOMBIE_GIRL.eyeHeight())
                     .clientTrackingRange(8)
                     .build("zombie_girl"));
 
