@@ -2,6 +2,7 @@ package com.otto.trialcompanions;
 
 import com.mojang.logging.LogUtils;
 import com.otto.trialcompanions.registry.ModCreativeTabs;
+import com.otto.trialcompanions.registry.ModEntities;
 import com.otto.trialcompanions.registry.ModItems;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -17,6 +18,7 @@ public class TrialCompanions {
     public TrialCompanions(FMLJavaModLoadingContext context) {
         IEventBus modBus = context.getModEventBus();
 
+        ModEntities.ENTITY_TYPES.register(modBus);
         ModItems.ITEMS.register(modBus);
         ModCreativeTabs.TABS.register(modBus);
     }

@@ -2,14 +2,18 @@ package com.otto.trialcompanions.registry;
 
 import com.otto.trialcompanions.TrialCompanions;
 import net.minecraft.world.item.Item;
+import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 public final class ModItems {
     public static final DeferredRegister<Item> ITEMS =
             DeferredRegister.create(ForgeRegistries.ITEMS, TrialCompanions.MOD_ID);
 
-    // Trial key, summon ticket, etc. are registered here as each part is implemented.
+    // Spawn eggs are for testing; in survival monster girls only appear in trials.
+    public static final RegistryObject<Item> ZOMBIE_GIRL_SPAWN_EGG = ITEMS.register("zombie_girl_spawn_egg", () ->
+            new ForgeSpawnEggItem(ModEntities.ZOMBIE_GIRL, 0x5A8A3C, 0x2E6B8F, new Item.Properties()));
 
     private ModItems() {}
 }
