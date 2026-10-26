@@ -1,0 +1,23 @@
+{
+  "type": "monstergirlcompanions:add_item",
+  "conditions": [
+    {
+      "condition": "forge:loot_table_id",
+      "loot_table_id": "minecraft:entities/husk"
+    },
+    {
+      "condition": "minecraft:killed_by_player"
+    },
+    {
+      "condition": "minecraft:random_chance_with_enchanted_bonus",
+      "enchantment": "minecraft:looting",
+      "unenchanted_chance": 0.005,
+      "enchanted_chance": {
+        "type": "minecraft:linear",
+        "base": 0.0075,
+        "per_level_above_first": 0.0025
+      }
+    }
+  ],
+  "item": "monstergirlcompanions:infection_key"
+}

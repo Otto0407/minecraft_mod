@@ -5,5 +5,9 @@
   "entity.monstergirlcompanions.zombie_girl_companion": "Zombie Girl",
   "item.monstergirlcompanions.infection_key": "Key of Infection",
   "item.monstergirlcompanions.infection_bell": "Bell of Infection",
-  "item.monstergirlcompanions.zombie_girl_spawn_egg": "Zombie Girl Spawn Egg"
+  "item.monstergirlcompanions.zombie_girl_spawn_egg": "Zombie Girl Spawn Egg",
+  "trial.monstergirlcompanions.charging": "Trial: %s",
+  "message.monstergirlcompanions.trial.busy": "A trial is already under way here",
+  "message.monstergirlcompanions.trial.incomplete": "The trial altar is incomplete",
+  "message.monstergirlcompanions.trial.too_high": "The trial altar must be entirely at or below Y=%s"
 }

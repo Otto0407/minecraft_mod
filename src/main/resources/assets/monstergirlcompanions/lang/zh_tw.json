@@ -5,5 +5,9 @@
   "entity.monstergirlcompanions.zombie_girl_companion": "殭屍娘",
   "item.monstergirlcompanions.infection_key": "感染之鑰",
   "item.monstergirlcompanions.infection_bell": "感染之鈴",
-  "item.monstergirlcompanions.zombie_girl_spawn_egg": "殭屍娘生怪蛋"
+  "item.monstergirlcompanions.zombie_girl_spawn_egg": "殭屍娘生怪蛋",
+  "trial.monstergirlcompanions.charging": "試煉：%s",
+  "message.monstergirlcompanions.trial.busy": "這裡的試煉正在進行中",
+  "message.monstergirlcompanions.trial.incomplete": "試煉祭壇不完整",
+  "message.monstergirlcompanions.trial.too_high": "試煉祭壇必須完全位於 Y=%s 以下"
 }

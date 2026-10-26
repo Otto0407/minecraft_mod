@@ -1,6 +1,7 @@
 package com.otto.monstergirlcompanions;
 
 import com.mojang.logging.LogUtils;
+import com.otto.monstergirlcompanions.registry.ModBlockEntities;
 import com.otto.monstergirlcompanions.registry.ModBlocks;
 import com.otto.monstergirlcompanions.registry.ModCreativeTabs;
 import com.otto.monstergirlcompanions.registry.ModEntities;
@@ -21,6 +22,7 @@ public class MonsterGirlCompanions {
         IEventBus modBus = context.getModEventBus();
 
         ModBlocks.BLOCKS.register(modBus);
+        ModBlockEntities.BLOCK_ENTITIES.register(modBus);
         ModEntities.ENTITY_TYPES.register(modBus);
         ModItems.ITEMS.register(modBus);
         ModCreativeTabs.TABS.register(modBus);

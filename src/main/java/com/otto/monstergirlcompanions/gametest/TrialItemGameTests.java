@@ -1,11 +1,12 @@
 package com.otto.monstergirlcompanions.gametest;
 
 import com.otto.monstergirlcompanions.MonsterGirlCompanions;
+import com.otto.monstergirlcompanions.block.TrialCoreBlockEntity;
 import com.otto.monstergirlcompanions.entity.companion.ZombieGirlCompanion;
 import com.otto.monstergirlcompanions.entity.monstergirl.ZombieGirl;
-import com.otto.monstergirlcompanions.registry.ModBlocks;
 import com.otto.monstergirlcompanions.registry.ModEntities;
 import com.otto.monstergirlcompanions.registry.ModItems;
+import com.otto.monstergirlcompanions.trial.TrialStructure;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTest;
@@ -27,38 +28,100 @@ import java.util.List;
 @GameTestHolder(MonsterGirlCompanions.MOD_ID)
 public class TrialItemGameTests {
     private static final String EMPTY = "forge:empty3x3x3";
+    private static final String TRIAL_AREA = "monstergirlcompanions:trial_area";
     private static final BlockPos CENTER = new BlockPos(1, 1, 1);
+    /** Trial core position inside the 7x8x7 trial area, leaving room for the altar below it. */
+    private static final BlockPos CORE = new BlockPos(3, 3, 3);
+    private static final int CHARGE_DONE = TrialCoreBlockEntity.CHARGE_TICKS + 5;
 
-    private static InteractionResult useOn(GameTestHelper helper, Player player, BlockPos relative) {
+    private static Player playerWithKey(GameTestHelper helper) {
+        Player player = helper.makeMockPlayer(GameType.SURVIVAL);
+        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.INFECTION_KEY.get()));
+        return player;
+    }
+
+    private static InteractionResult useKeyOn(GameTestHelper helper, Player player, BlockPos relative) {
         BlockPos pos = helper.absolutePos(relative);
         BlockHitResult hit = new BlockHitResult(Vec3.atCenterOf(pos), Direction.UP, pos, false);
         return player.getMainHandItem().useOn(new UseOnContext(player, InteractionHand.MAIN_HAND, hit));
     }
 
-    @GameTest(template = EMPTY)
-    public static void keyOnTrialCoreStartsTrial(GameTestHelper helper) {
-        helper.setBlock(CENTER, ModBlocks.TRIAL_CORE.get());
-        Player player = helper.makeMockPlayer(GameType.SURVIVAL);
-        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.INFECTION_KEY.get()));
+    private static TrialCoreBlockEntity core(GameTestHelper helper, BlockPos relative) {
+        return helper.getBlockEntity(relative);
+    }
 
-        InteractionResult result = useOn(helper, player, CENTER);
+    @GameTest(template = TRIAL_AREA, timeoutTicks = 200)
+    public static void keyOnAltarChargesThenSpawnsZombieGirl(GameTestHelper helper) {
+        TrialStructure.build(helper.getLevel(), helper.absolutePos(CORE));
+        Player player = playerWithKey(helper);
 
-        helper.assertTrue(result.consumesAction(), "using the key on a trial core should succeed");
-        helper.assertEntityPresent(ModEntities.ZOMBIE_GIRL.get(), CENTER.above(), 1.0);
+        helper.assertTrue(useKeyOn(helper, player, CORE).consumesAction(), "the key should start the trial");
         helper.assertTrue(player.getMainHandItem().isEmpty(), "the key should be used up");
+        helper.assertTrue(core(helper, CORE).phase() == TrialCoreBlockEntity.Phase.CHARGING, "the trial should be charging");
+        helper.assertTrue(helper.getEntities(ModEntities.ZOMBIE_GIRL.get()).isEmpty(), "she should not appear before the bar fills");
+
+        helper.startSequence()
+                .thenExecuteAfter(CHARGE_DONE, () -> {
+                    helper.assertEntityPresent(ModEntities.ZOMBIE_GIRL.get(), CORE.above(), 1.5);
+                    helper.assertTrue(core(helper, CORE).phase() == TrialCoreBlockEntity.Phase.ACTIVE, "the trial should be active");
+                })
+                .thenSucceed();
+    }
+
+    @GameTest(template = TRIAL_AREA, timeoutTicks = 200)
+    public static void trialEndsWhenZombieGirlDies(GameTestHelper helper) {
+        TrialStructure.build(helper.getLevel(), helper.absolutePos(CORE));
+        useKeyOn(helper, playerWithKey(helper), CORE);
+
+        helper.startSequence()
+                .thenExecuteAfter(CHARGE_DONE, () -> helper.getEntities(ModEntities.ZOMBIE_GIRL.get()).forEach(ZombieGirl::kill))
+                .thenExecuteAfter(2, () -> helper.assertTrue(core(helper, CORE).phase() == TrialCoreBlockEntity.Phase.IDLE,
+                        "the trial should end with her"))
+                .thenSucceed();
+    }
+
+    @GameTest(template = TRIAL_AREA)
+    public static void busyCoreKeepsSecondKey(GameTestHelper helper) {
+        TrialStructure.build(helper.getLevel(), helper.absolutePos(CORE));
+        useKeyOn(helper, playerWithKey(helper), CORE);
+        Player second = playerWithKey(helper);
+
+        helper.assertTrue(useKeyOn(helper, second, CORE) == InteractionResult.FAIL, "a running trial should refuse another key");
+        helper.assertTrue(second.getMainHandItem().getCount() == 1, "the second key should be kept");
+        helper.succeed();
+    }
+
+    @GameTest(template = TRIAL_AREA)
+    public static void incompleteAltarKeepsKey(GameTestHelper helper) {
+        TrialStructure.build(helper.getLevel(), helper.absolutePos(CORE));
+        helper.setBlock(CORE.offset(1, 1, 1), Blocks.AIR); // one redstone torch missing
+        Player player = playerWithKey(helper);
+
+        helper.assertTrue(useKeyOn(helper, player, CORE) == InteractionResult.FAIL, "an incomplete altar should refuse the key");
+        helper.assertTrue(player.getMainHandItem().getCount() == 1, "the key should be kept");
+        helper.assertTrue(core(helper, CORE).phase() == TrialCoreBlockEntity.Phase.IDLE, "no trial should start");
+        helper.succeed();
+    }
+
+    @GameTest(template = TRIAL_AREA)
+    public static void altarAboveY40KeepsKey(GameTestHelper helper) {
+        // Test structures sit near the bottom of the world; build this altar high enough to poke above Y=40.
+        BlockPos high = CORE.above(TrialStructure.MAX_Y - helper.absolutePos(CORE).getY());
+        TrialStructure.build(helper.getLevel(), helper.absolutePos(high));
+        Player player = playerWithKey(helper);
+
+        helper.assertTrue(useKeyOn(helper, player, high) == InteractionResult.FAIL, "an altar reaching above Y=40 should refuse the key");
+        helper.assertTrue(player.getMainHandItem().getCount() == 1, "the key should be kept");
+        TrialStructure.clear(helper.getLevel(), helper.absolutePos(high));
         helper.succeed();
     }
 
     @GameTest(template = EMPTY)
     public static void keyOnOtherBlockDoesNothing(GameTestHelper helper) {
         helper.setBlock(CENTER, Blocks.STONE);
-        Player player = helper.makeMockPlayer(GameType.SURVIVAL);
-        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.INFECTION_KEY.get()));
+        Player player = playerWithKey(helper);
 
-        InteractionResult result = useOn(helper, player, CENTER);
-
-        helper.assertTrue(result == InteractionResult.PASS, "a key should only work on a trial core");
-        helper.assertTrue(helper.getEntities(ModEntities.ZOMBIE_GIRL.get()).isEmpty(), "no zombie girl should appear");
+        helper.assertTrue(useKeyOn(helper, player, CENTER) == InteractionResult.PASS, "a key should only work on a trial core");
         helper.assertTrue(player.getMainHandItem().getCount() == 1, "the key should be kept");
         helper.succeed();
     }

@@ -30,10 +30,9 @@ import net.minecraftforge.event.ForgeEventFactory;
 
 /**
  * Zombie girl: melee bruiser that keeps calling zombie reinforcements.
- * 3 seconds after she appears (the trial starting) she calls 3 zombies, then 2-5 more every 5-10 seconds.
+ * As soon as she appears she calls 3 zombies, then 2-5 more every 5-10 seconds.
  */
 public class ZombieGirl extends AbstractMonsterGirl {
-    private static final int FIRST_WAVE_DELAY = 3 * 20;
     private static final int FIRST_WAVE_SIZE = 3;
     private static final int WAVE_MIN_SIZE = 2;
     private static final int WAVE_MAX_SIZE = 5;
@@ -44,7 +43,7 @@ public class ZombieGirl extends AbstractMonsterGirl {
     /** Waves wait while no player is this close, so an idle zombie girl cannot fill the world with zombies. */
     private static final double PLAYER_RANGE = 32.0;
 
-    private int reinforcementCooldown = FIRST_WAVE_DELAY;
+    private int reinforcementCooldown;
     private boolean firstWaveCalled;
 
     public ZombieGirl(EntityType<? extends ZombieGirl> type, Level level) {
